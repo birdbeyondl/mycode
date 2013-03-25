@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+	<TableLayout
+		android:id="@+id/tabLayout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+		
+		<TableRow>
+			<TextView 
+				android:id="@+id/textview_username"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:text="@string/textview_username"/>
+			<EditText 
+				android:id="@+id/edittext_username"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/edit_hint"
+				android:scrollHorizontally="true"
+				/>
+		</TableRow>
+		
+		<TableRow>
+			<TextView 
+				android:id="@+id/textview_pass"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:text="@string/textview_pass"/>
+			<EditText 
+				android:id="@+id/edittext_pass"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/edit_pass_hint"
+				android:password="true"
+				android:scrollHorizontally="true"
+				/>
+		</TableRow>
+		
+		<TableRow>
+			<TextView 
+				android:id="@+id/textview_autologin"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:text="@string/textview_autologin"/>
+			<CheckBox 
+				android:id="@+id/checkbox_autologin"
+				android:text=""
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"/>
+		</TableRow>
+		
+		<TableRow>
+			<Button 
+				android:text="@string/btntext_login"
+				android:id="@+id/btn_login"/>
+			<Button 
+				android:text="@string/btntext_cancel" 
+				android:id="@+id/btn_cancel"/>
+		</TableRow>
+		
+	</TableLayout>
+</LinearLayout>

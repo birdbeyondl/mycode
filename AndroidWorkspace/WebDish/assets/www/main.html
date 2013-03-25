@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>PhotoSwipe</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+
+	<link rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css" />
+
+	<script src="js/jquery-1.7.1.min.js"></script>
+	<script src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+
+		<link href="slider/styles.css" type="text/css" rel="stylesheet" />
+		<link href="slider/photoswipe.css" type="text/css" rel="stylesheet" />
+	
+		<script type="text/javascript" src="slider/klass.min.js"></script>
+		<script type="text/javascript" src="slider/code.photoswipe-3.0.4.min.js"></script>
+		
+	<script type="text/javascript">
+		document.addEventListener("deviceready", onDeviceReady, false);
+		function onDeviceReady() {       
+		        document.addEventListener("backbutton", backevent, false); //返回键
+		}
+		    function  backevent(){
+				navigator.notification.confirm(
+			        '确认退出？',  // message
+			        onConfirm,              // callback to invoke with index of button pressed
+			        '在线点餐',            // title
+			        '确认,取消'          // buttonLabels
+    			);
+		    }
+		    //确认退出，执行程序退出
+		    function onConfirm(button) {
+		       if(button==1)
+		           navigator.app.exitApp();
+    		}
+    		//显示广告图片
+    		 (function (window, Util, PhotoSwipe) {
+	        Util.Events.domReady(function (e) {
+	            var instance, indicators;
+	            instance = PhotoSwipe.attach(
+					[
+							{ url: 'images/full/1.jpg'},
+							{ url: 'images/full/2.jpg'},
+							{ url: 'images/full/3.jpg'},
+							{ url: 'images/full/4.jpg'}
+					],
+					{
+					    target: window.document.querySelectorAll('#PhotoSwipeTarget')[0],
+					    preventHide: true,
+                        autoStartSlideshow:true,
+                        margin:0,
+                        allowUserZoom:false,
+                        captionAndToolbarHide:true,
+					    getImageSource: function (obj) {
+					        return obj.url;
+					    },
+					    getImageCaption: function (obj) {
+					        return obj.caption;
+					    }
+					}
+				);
+	            instance.show(0);
+	        });
+
+	    } (window, window.Code.Util, window.Code.PhotoSwipe));
+	</script>
+	<style type="text/css">
+		div.mainLink
+		{
+			float:left;
+			width:50%;
+			height:auto;
+			margin:20px auto;
+			text-align:center;
+		}
+		div.headerClass
+		{
+			float:right;
+			height:44px;
+			padding:4px 0px 2px;
+			margin-bottom:-5px;
+		}
+	</style>
+</head>
+<body>
+<div data-role="page" id="main" style="background-color:#FFBD9D;">
+<div style="background-color:#FF9600;">
+<div style="background-image:url(images/logo.jpg);background-repeat:no-repeat;height:44px;">	
+	<div id="registerPic" class="headerClass" onclick="top.location='register.html'">
+		<img src="images/register.jpg" />
+	</div>
+	<div id="onloadPic" class="headerClass" onclick="top.location='login.html'">
+		<img src="images/onload.jpg" />
+	</div>
+
+</div>
+<div id="PhotoSwipeTarget" ></div>
+</div>
+<div data-role="content" id="MainContent">
+    <div>
+    	<div class="mainLink" onclick="top.location='searchrest.html'"><img src="images/restarant.jpg" /></div>
+    	<div class="mainLink" onclick="top.location='searchdish.html'"><img src="images/food.jpg" /></div>
+    </div>
+    <div>
+       	<div class="mainLink" onclick="top.location='index.html'"><img src="images/search.jpg" /></div>
+    	<div class="mainLink" onclick="top.location='mobile_rest_myOrder.html'"><img src="images/myorder.jpg" /></div>
+    </div>
+</div>
+</div>
+
+</body>
+</html>
+
+

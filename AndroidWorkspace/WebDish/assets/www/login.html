@@ -1,0 +1,86 @@
+<head>
+    <meta charset="UTF-8" >
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+</head>
+
+<script type="text/javascript">
+	document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {       
+        document.addEventListener("backbutton", backevent, false); 
+    }
+    function  backevent(){
+         navigator.app.backHistory();
+    }
+     $(document).bind("mobileinit", function () {
+        $.mobile.loadingMessageTextVisible = true;
+    });
+    
+	function  loginsubmit()
+	{	
+		$.mobile.loadingMessageTextVisible = true;
+		$.mobile.showPageLoadingMsg("b", "请稍等");
+		var name=document.getElementById('name').value;
+		var password=document.getElementById('pwd').value;
+		if(name==""){
+			$.mobile.hidePageLoadingMsg();
+			navigator.notification.alert('用户名不能为空', '', '在线点餐',  '确认');
+			return;
+		}
+		if(password==""){
+			$.mobile.hidePageLoadingMsg();
+			navigator.notification.alert('密码不能为空', '', '在线点餐',  '确认');
+			return;
+		}
+		$.get("http://www.0713.me/mobile/login.php", {username:name, password:password},
+		  function(data){
+		  	$.mobile.hidePageLoadingMsg();
+		    if(data.state==3){
+		    	localStorage.setItem("LoginState",1);
+		    	localStorage.setItem("LoginUid",data.uid);
+		    	
+		    	localStorage.setItem("LoginUsername",name);
+		    	//返回主页
+		    	navigator.app.backHistory();
+		    }else{
+		    	navigator.notification.alert('用户名或密码错误，请重新登录', '', '在线点餐',  '确认');
+		    }
+		  },"json");
+	}
+</script>
+
+
+
+<body>
+
+	<div id="login" data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e">
+			<a href="#" onclick="top.location='main.html'" data-icon="back">返回</a>
+			<h1>用户登录</h1>
+		</div>
+				
+		<div data-role="content">
+			<ul class="ui-listview ui-listview-inset ui-corner-all ui-shadow" data-inset="true" data-role="listview" >
+				<li data-theme="c">
+					<input id="name" name="name" type="text" placeholder="用户名或手机号" value="">
+				</li>
+				<li data-theme="c" >
+					<input id="pwd" name="pwd" type="password" placeholder="密码" value="">
+				</li>
+				<li data-theme="c" >
+					<fieldset class="ui-grid-a">
+						<div class="ui-block-a"><a href="#" data-role="button" onclick="loginsubmit();">登录</a></div>
+						<div class="ui-block-b"><a href="register.html" data-role="button">注册</a></div>
+					</fieldset>
+				</li>
+			</ul>
+	
+		</div>
+	</div>
+	
+</body>
+
+

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, WebDishActivity!</string>
+    <string name="app_name">在线点餐</string>
+
+</resources>

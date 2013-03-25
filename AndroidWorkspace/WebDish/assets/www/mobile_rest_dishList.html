@@ -1,0 +1,194 @@
+<head>
+        <meta charset="UTF-8" >
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+		<script type="text/javascript" src="js/script_mobile_menu.js"></script>
+</head>
+
+	<script type="text/javascript">
+		
+		document.addEventListener("deviceready", onDeviceReady, false);
+	    function onDeviceReady() {       
+	        document.addEventListener("backbutton", backevent, false); 
+	    }
+	    function  backevent(){
+	         navigator.app.backHistory();
+	    }
+	    $(document).bind("mobileinit", function () {
+	        $.mobile.loadingMessageTextVisible = true;
+	    });
+		$(document).ready(function(){
+			if(localStorage.getItem("filterfoodtype")==null)
+				localStorage.setItem("filterfoodtype",0);
+			
+			if(localStorage.getItem("classname")==null)
+				localStorage.setItem("classname","所有");
+				
+			if(localStorage.getItem("page")==null)
+				localStorage.setItem("page",1);
+				
+			if(localStorage.getItem("filterfoodtype")==null)
+				localStorage.setItem("filterfoodtype",0);
+				
+			Init();
+		});
+	
+		  
+		function Init(){
+			$.mobile.loadingMessageTextVisible = true;
+			$.mobile.showPageLoadingMsg("b", "获取菜品信息");
+			var restid=localStorage.getItem("restid");
+			
+			var page=localStorage.getItem("page")==null?'':localStorage.getItem("page");
+			//指 今日特价、今日推荐 、所有
+			var classname=localStorage.getItem("classname")==null?"所有":localStorage.getItem("classname");
+			//指菜类
+			var filterfoodtype=localStorage.getItem("filterfoodtype")==null?"0":localStorage.getItem("filterfoodtype");
+
+			$.ajax({
+				type : "GET",
+				url : "http://www.0713.me/mobile/rest.php?do=dishList",
+				data : "restaurantid="+restid+"&page="+page+"&classname="+classname+"&filterfoodtype="+filterfoodtype,
+				cache : false,
+				dataType : "json",
+				success : function(data) {
+					show_data(data);	
+					$.mobile.hidePageLoadingMsg();		
+				}
+			});
+		}
+		
+		function nextpage(page){
+			if(page==0){
+				return;
+			}else{
+				localStorage.setItem("page",page);
+				Init();
+			}
+		}
+		
+		function show_data(data){
+			$("#head").text(localStorage.getItem("restname"));
+
+			if(data.num>0){			
+				var tmphtml='';	
+				var restid=localStorage.getItem("restid");
+				for(var i=0;i<data.info.length;i++){
+					tmphtml+='<li class="dishlist ui-btn ui-btn-icon-right ui-li ui-li-has-alt ui-li-has-thumb ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-inline="false" data-wrapperels="div" data-icon="false" data-iconpos="right" data-theme="c"><div class="ui-btn-inner ui-li ui-li-has-alt"><div class="ui-btn-text">';
+
+					if(isincart(data.info[i].Dish_ID)){
+						tmphtml+='<a href="#" onclick="GotoDishDetail(this.id);" id="'+data.info[i].Dish_ID+'" title="已成功加入菜单" style="background:FFFF99" class="ui-link-inherit"><img src="'+data.info[i].imageurl+'"  width="110px" height="80px" class="ui-li-thumb"><h3 class="ui-li-heading">'+data.info[i].Dish_Name+'</h3><p class="ui-li-desc">';
+					}else{
+						tmphtml+='<a href="#" onclick="GotoDishDetail(this.id);" id="'+data.info[i].Dish_ID+'"  class="ui-link-inherit"><img src="'+data.info[i].imageurl+'"  width="110px" height="80px" class="ui-li-thumb"><h3 class="ui-li-heading">'+data.info[i].Dish_Name+'</h3><p class="ui-li-desc">';
+					}
+					if(data.info[i].Dish_Status==1){
+						if(data.info[i].Dish_IsSpecial==1){
+							tmphtml+='<b class="greenFont">￥'+data.info[i].Dish_SpecialPrice+'/'+data.info[i].Dish_Quantify+'</b></p><p class="ui-li-desc">	</p></a></div></div><a data-icon="false" onclick="AddToShoppingCar('+data.info[i].Dish_ID+',1,'+data.info[i].Dish_SpecialPrice+',\''+data.info[i].Dish_Name+'\','+restid+')" title="加入菜单" class="ui-li-link-alt ui-btn ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-inline="false" data-wrapperels="span" data-iconpos="false" data-theme="c"><span class="ui-btn-inner"><span class="ui-btn-text"></span><span data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span" data-icon="gear" data-iconpos="notext" data-theme="d" title="" class="ui-btn ui-btn-up-d ui-btn-icon-notext ui-btn-corner-all ui-shadow"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text"></span><span class="ui-icon ui-icon-gear ui-icon-shadow"></span></span></span></span></a></li>';
+						}else{
+							tmphtml+='<b class="greenFont">￥'+data.info[i].Dish_Price+'/'+data.info[i].Dish_Quantify+'</b></p><p class="ui-li-desc">	</p></a></div></div><a data-icon="false" onclick="AddToShoppingCar('+data.info[i].Dish_ID+',1,'+data.info[i].Dish_Price+',\''+data.info[i].Dish_Name+'\','+restid+')" title="加入菜单" class="ui-li-link-alt ui-btn ui-btn-up-c" data-corners="false" data-shadow="false" data-iconshadow="true" data-inline="false" data-wrapperels="span" data-iconpos="false" data-theme="c"><span class="ui-btn-inner"><span class="ui-btn-text"></span><span data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span" data-icon="gear" data-iconpos="notext" data-theme="d" title="" class="ui-btn ui-btn-up-d ui-btn-icon-notext ui-btn-corner-all ui-shadow"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text"></span><span class="ui-icon ui-icon-gear ui-icon-shadow"></span></span></span></span></a></li>';
+						}
+					}else{
+						if(data.info[i].Dish_IsSpecial==1){
+							tmphtml+='<b class="greenFont">￥'+data.info[i].Dish_SpecialPrice+'/'+data.info[i].Dish_Quantify+'</b></p><p class="ui-li-desc">	</p></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>';						
+						}else{
+							tmphtml+='<b class="greenFont">￥'+data.info[i].Dish_Price+'/'+data.info[i].Dish_Quantify+'</b></p><p class="ui-li-desc">	</p></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>';				
+						}
+					}
+				}
+				
+				var thtml='<option value="0">所有</option>';	//生成菜类列表
+				for(var i=0;i<data.foodtypelist.length;i++){
+	                thtml+='<option value="'+data.foodtypelist[i].foodtype+'" >'+data.foodtypelist[i].typename+'</option>'
+				}
+	           
+	            $("#area").empty();  		
+				$("#area").append(thtml);
+				
+			    var typename=localStorage.getItem("typename");//设置下拉列表显示当前的菜类
+			    
+			    if(typename==null)
+			    	typename="所有";
+			    	
+			    $("div.ui-select div.ui-select div span.ui-btn-inner.ui-btn-corner-all span.ui-btn-text").text(typename);
+				
+				//清空界面
+				$("#content").empty();
+				$("#pagediv").empty();
+				
+				//显示界面
+				$("#content").append(tmphtml);
+				$("#pagediv").append(data.pagehtml);
+			}
+			else{
+				//清空界面
+				$("#content").empty();
+				$("#pagediv").empty();
+			 	$("#content").append("<div style='margin:10px 0;'><p>暂无符合条件的搜索结果</p></div> ");
+			}
+				
+		}
+		   
+	function getValue(value){  //切换今日特价/今日推荐
+		
+		var className=value;
+		window.localStorage.setItem("classname",value);
+		Init();
+		window.localStorage.setItem("classname","所有");
+		
+	}
+
+	function typename()
+	{
+			var typeID=$("#area").val();
+			var typename=$("#area").find("option:selected").text();
+			window.localStorage.setItem("filterfoodtype",typeID);
+			window.localStorage.setItem("typename",typename);
+			localStorage.setItem("page",1);
+			Init();		
+	}
+	  
+
+
+	  	function GotoDishDetail(dishid){
+	  		localStorage.setItem('dishid',dishid);		
+	  		top.location='mobile_rest_dishDetail.html';
+	  	}
+	</script>
+</head>
+<body>
+	<div data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e">
+		    <h1 id="head"></h1>
+			<div id="guide" data-role="navbar" data-theme="e">
+				<ul>
+					<li><a href="#" data-icon="home" onclick="top.location='mobile_rest_main.html'">餐厅首页</a></li>
+					<li><a href="#" data-icon="gear" onclick="top.location='mobile_rest_orderseat.html'">订座</a></li>
+					<li><a href="#" data-icon="grid" onclick="top.location='mobile_rest_mymenu.html'">菜单</a></li>
+				</ul>
+			</div>
+			
+		</div>
+				
+		<div data-role="content" data-theme="d">
+		
+        <div data-role="navbar" >
+          <ul>          
+		   <li><input type="button"  class="class" value="今日推荐" onclick="getValue(this.value)"></li>
+           <li><input type="button"  class="class" value="今日特价" onclick="getValue(this.value)"></li>           
+           <li ><div class="ui-select"><select id="area"  name="area" tabindex="-1" onchange="typename()" >
+           </select></div></li>     			       
+          </ul>
+       </div><!-- /navbar -->
+	   <br>	
+	  <ul class="ui-listview"  data-split-icon="gear" data-role="listview" id="content">
+	  </ul>
+	</div>
+
+		<div id="pagediv" data-role="footer"  data-position="fixed" data-theme="e">
+			
+		</div>
+	</div>
+</body>

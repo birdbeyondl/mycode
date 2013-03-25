@@ -1,0 +1,118 @@
+<head>
+        <meta charset="UTF-8" >
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+		<script type="text/javascript" src="js/script_mobile_menu.js"></script>
+</head>
+<script type="text/javascript">
+		
+           document.addEventListener("deviceready", onDeviceReady, false);
+           function onDeviceReady() {       
+              document.addEventListener("backbutton", backevent, false); 
+           }
+           function  backevent(){
+
+              navigator.app.backHistory();
+           }
+           $(document).bind("mobileinit", function () {
+              $.mobile.loadingMessageTextVisible = true;
+           });
+		$(document).ready(function(){
+			Init();
+		});
+	
+		  
+		function Init(){
+			$.mobile.loadingMessageTextVisible = true;
+			$.mobile.showPageLoadingMsg("b", "获取订单详情");
+			var orderID=localStorage.getItem("orderID");
+			var uid=localStorage.getItem("LoginUid");
+			/*
+			
+			$.ajax({
+				type : "GET",
+				url : "http://www.0713.me/mobile/rest.php?do=dishList",
+				data : "restaurantid="+restid+"&page="+page+"&classname="+classname+"&filterfoodtype="+filterfoodtype,
+				cache : false,
+				dataType : "json",
+				success : function(data) {
+				show_data(data);	
+				$.mobile.hidePageLoadingMsg();		
+				}
+			});*/
+			$.ajax({
+				type : "GET",
+				url : "http://www.0713.me/mobile/rest.php?do=orderDetail",
+				//url:"http://122.205.129.216/0713.me/trunk/home/mobile_rest.php?do=orderDetail",
+				data : "uid="+uid+"&orderID="+orderID,
+				cache : false,
+				dataType : "json",
+				success : function(data) {
+					show_data(data);	
+					$.mobile.hidePageLoadingMsg();		
+				}
+			});
+		}
+		
+        function show_data(data){
+	        if(data.orderli.length>0){  
+		        var tmphtml='<h3>餐厅信息</h3><ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"><li class="ui-li ui-li-static ui-body-c ui-corner-top">餐厅名称：'+data.orderli[0].Merchant_Name+'</li><li class="ui-li ui-li-static ui-body-c">餐厅地址：'+data.orderli[0].Merchant_Address+'</li><li class="ui-li ui-li-static ui-body-c ui-corner-bottom">联系方式：';
+		        var tels=data.orderli[0].Merchant_Contact_Mobile.split(",");
+		        for(var i=0; i<tels.length; i++){
+					if(tels[i].length>11){
+						var areacode= tels[i].split("-")[0];
+						var number= tels[i].split("-")[1];
+						
+						tmphtml +='<a href="tel:'+areacode+number+'">'+areacode+number+'</a>';
+					}
+					else{
+						tmphtml +='<a href="tel:'+tels[i]+'">'+tels[i]+'</a>';
+					}
+				}
+		        tmphtml+='</li></ul>'+'<h3>座席信息</h3><ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"><li class="ui-li ui-li-static ui-body-c ui-corner-top">座席位置：'+data.orderli[0].Room_Floor+'楼'+data.orderli[0].Room_Name+'</li><li class="ui-li ui-li-static ui-body-c ui-corner-bottom">座席名称：'+data.orderli[0].Seat_Name+'</li></ul>'
+                       +'<h3>就餐时间</h3><ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"><li class="ui-li ui-li-static ui-body-c ui-corner-top">就餐日期：'+data.orderli[0].OrderSeat_ReservedDate+'</li><li class="ui-li ui-li-static ui-body-c ui-corner-bottom">就餐时间：'+data.orderli[0].OrderSeat_ReservedTime+'</li></ul>';
+			      //清空界面
+				$("#content").empty();
+				
+				//显示界面
+				$("#content").append(tmphtml);
+			}
+			else{
+				//清空界面
+				$("#content").empty();
+			 	$("#content").append("<div style='margin:10px 0;'><p>该订单不存在！</p></div> ");
+			}	
+		}
+		function cancelOrder()
+		{
+			if(confirm("确定要退订吗？")){
+			var orderID=localStorage.getItem("orderID");
+			$.get("http://www.0713.me/mobile/rest.php?do=orderDetail", 
+					{orderID:orderID,cancel:1}, function (data){
+						//清空界面
+						$("#content").empty();
+						$("#pagediv").empty();
+					 	$("#content").append("<div style='margin:10px 0;'><p>退订成功！</p></div> ");
+						},"json");
+			}
+		}
+	</script>
+<body>
+	<div data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e">
+		<a href="#" data-icon="back" onclick="top.location='mobile_rest_myOrder.html'">返回</a>
+		    <h1 id="head">订单详情</h1>
+		<a href="#"  onclick="cancelOrder()">取消订单</a>
+		</div>
+				
+		<div data-role="content" id="content" data-theme="e">
+
+        </div>
+		<div id="pagediv" data-role="footer"  data-position="fixed" data-theme="e">
+			
+		</div>
+	</div>
+</body>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, TabDemoActivity!</string>
+    <string name="app_name">TabDemo</string>
+    <string name="button1">A semi-random button</string>
+    <string name="tab1_title">Clock</string>
+    <string name="tab2_title">Button</string>
+</resources>

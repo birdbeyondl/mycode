@@ -1,0 +1,128 @@
+<html>
+	
+	<head>
+        <meta charset="UTF-8" >
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+		<script type="text/javascript" src="js/datePickerPlugin.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+		<script type="text/javascript">
+		/*
+			document.addEventListener("deviceready", onDeviceReady, false);
+		    function onDeviceReady() {       
+		        document.addEventListener("backbutton", backevent, false); //返回键
+		    }
+		    function  backevent(){
+				navigator.notification.confirm(
+			        '确认退出？',  // message
+			        onConfirm,              // callback to invoke with index of button pressed
+			        '在线点餐',            // title
+			        '确认,取消'          // buttonLabels
+    			);
+		    }
+		    //确认退出，执行程序退出
+		    function onConfirm(button) {
+		       if(button==1)
+		           navigator.app.exitApp();
+    		}
+    		*/
+    		document.addEventListener("deviceready", onDeviceReady, false);
+			    function onDeviceReady() {       
+			        document.addEventListener("backbutton", backevent, false); //返回键
+			    }
+			    function  backevent(){
+			         navigator.app.backHistory();
+			    }
+			function searchList()
+			{	
+				//$.mobile.showPageLoadingMsg("a", "Loading...");
+				var key=document.getElementById('search').value;
+				var searchtype=document.getElementById('searchtype').value;
+				var area=document.getElementById('area').value;
+				var kind=document.getElementById('kind').value;
+				
+				//key=(key==null)?"":key;
+				localStorage.setItem("key",key);
+				localStorage.setItem("searchpage",1);
+				localStorage.setItem("searchtype",searchtype);
+				localStorage.setItem("area",area);
+				localStorage.setItem("kind",kind);
+						
+				top.location="mobile_search_list.html";
+			}
+		</script>
+	</head>
+	
+	<body>
+	
+	<div data-role="page" data-theme="e" id="main">
+		<div data-role="header" data-theme="e" data-position="fixed">
+		<a href="#" data-icon="home" onclick="top.location='main.html'">首页</a>
+			<h1>搜索</h1>
+		</div>
+				
+		<div data-role="content">
+			<ul class="ui-listview ui-listview-inset ui-corner-all ui-shadow" data-inset="true" data-role="listview" >
+				<li class="ui-field-contain ui-body ui-br ui-li ui-li-static ui-body-c" data-role="fieldcontain" data-theme="c">
+					<label class="ui-input-text" ">关键词：</label>
+					<input id="search" type="text" data-type="search" placeholder="请输入美食名、餐馆名等"  name="key" value="">
+				</li>
+				<li class="ui-field-contain ui-body ui-br ui-li ui-li-static ui-body-c" data-role="fieldcontain" data-theme="c" >
+					<label class="ui-input-text" >地&#x3000;域：</label>
+					<div class="ui-select">
+						<select id="area" name="area" tabindex="-1" >
+							<option value="全部">全部</option>	
+							<option value="黄州">黄州</option>							
+							<option value="武穴">武穴</option>							
+							<option value="红安">红安</option>	
+							<option value="罗田">罗田</option>	
+							<option value="麻城">麻城</option>	
+							<option value="团风">团风</option>
+							<option value="英山">英山</option>	
+							<option value="浠水">浠水</option>	
+							<option value="蕲春">蕲春</option>	
+							<option value="黄梅">黄梅</option>	
+							<option value="龙感湖">龙感湖</option>				
+						</select>
+					</div>
+				</li>
+				<li class="ui-field-contain ui-body ui-br ui-li ui-li-static ui-body-c" data-role="fieldcontain" data-theme="c">
+					<label class="ui-input-text" >类&#x3000;别：</label>
+					<div class="ui-select">
+						<select id="searchtype" name="searchtype" tabindex="-1" >
+							<option value="searchtype_1">餐厅</option>	
+							<option value="searchtype_2">菜品</option>							
+							<option value="searchtype_3">地标</option>							
+							<option value="searchtype_4">特色菜</option>				
+						</select>
+					</div>
+				</li>
+				<li class="ui-field-contain ui-body ui-br ui-li ui-li-static ui-body-c" data-role="fieldcontain" data-theme="c">
+					<label class="ui-input-text" >菜&#x3000;系：</label>
+					<div class="ui-select">
+						<select id="kind" name="kind" tabindex="-1" >
+							<option value="全部">全部</option>	
+							<option value="湖北菜">湖北菜</option>							
+							<option value="农家菜">农家菜</option>							
+							<option value="武穴菜">武穴菜</option>	
+							<option value="湖南菜">湖南菜</option>
+							<option value="粤菜">粤菜</option>
+							<option value="川菜">东北菜</option>	
+						</select>
+					</div>
+				</li>				
+			</ul>
+			
+			<a data-theme="e" data-role="button" onclick="searchList();" >搜索</a>
+			<a data-theme="e" data-role="button" onclick="top.location='rest_map.html'">附近餐厅</a>
+			
+		</div>
+		
+	</div>
+	
+	</body>
+	
+</html>

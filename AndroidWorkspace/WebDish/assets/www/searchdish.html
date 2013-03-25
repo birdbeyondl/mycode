@@ -1,0 +1,131 @@
+<head>
+    <meta charset="UTF-8" >
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+	<script src="js/touchwipe.js"></script>
+	<script>
+	$(function(){
+		$("#content").touchwipe({
+			min_move_x: 100,
+			min_move_y: 100,
+			wipeUp: function() { 
+				var recommendpage=localStorage.getItem("recommendpage");
+				
+				$.get("http://www.0713.me/mobile/recommendrest.php", {op:"dish",page:recommendpage},
+				  function(data){
+				  	  if(data.num>0)
+						{	
+							tmphtml="";
+							for(var i=0; i<data.list.length; i++)
+							{
+								tmphtml+='<li onclick="GotoRestDishDetail('+data.list[i].Merchant_ID+',\''+data.list[i].Merchant_Name+'\','+data.list[i].Dish_ID+');"><a><img src="'+data.list[i].imageurl+'" width="110px" height="80px"><h1>'+data.list[i].Dish_Name+'</h1><p>'+data.list[i].Merchant_Name+'</p></a></li>';
+							}
+							$("#recommentlist").append(tmphtml);
+							$("#recommentlist").listview('refresh');
+							recommendpage+=1;
+							localStorage.setItem("recommendpage",recommendpage);
+						}
+				  },"json");
+			},
+			preventDefaultEvents: false
+		});
+	});
+	</script>
+</head>
+
+<script type="text/javascript">
+	document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {       
+        document.addEventListener("backbutton", backevent, false); 
+    }
+    function  backevent(){
+         navigator.app.backHistory();
+    }
+    $(document).bind("mobileinit", function () {
+	        $.mobile.loadingMessageTextVisible = true;
+	 });
+    
+    $(document).ready(function(){
+    	$.mobile.loadingMessageTextVisible = true;
+    	$.mobile.showPageLoadingMsg("b", "获取推荐菜品信息");
+    	localStorage.setItem("recommendpage",2);
+		Init();
+	});
+		
+	function Init()
+	{
+		$.get("http://www.0713.me/mobile/recommendrest.php", {op:"dish"},
+		  function(data){
+		  	showdata(data);	
+		  	$.mobile.hidePageLoadingMsg();		    
+		  },"json");
+	}
+	
+	function showdata(data)
+	{
+		if(data.num>0)
+		{	
+			tmphtml="";
+			for(var i=0; i<data.list.length; i++)
+			{
+				tmphtml+='<li onclick="GotoRestDishDetail('+data.list[i].Merchant_ID+',\''+data.list[i].Merchant_Name+'\','+data.list[i].Dish_ID+');"><a><img src="'+data.list[i].imageurl+'" width="110px" height="80px"><h1>'+data.list[i].Dish_Name+'</h1><p>'+data.list[i].Merchant_Name+'</p></a></li>';
+			}
+		}
+		else
+		{
+			tmphtml="<li>暂无推荐菜品</li>";
+		}
+		$("#recommentlist").append(tmphtml);
+		$("#recommentlist").listview('refresh');
+	}
+	
+	function GotoRestDishDetail(restid,restname,dishid)
+	{	
+		localStorage.setItem("restid",restid);
+		localStorage.setItem("restname",restname);
+		localStorage.setItem("dishid",dishid);
+		//对存储在订座页面的信息进行初始化
+	    localStorage.removeItem("OrderPhone");
+	    localStorage.removeItem("Date");
+	    localStorage.removeItem("Time");
+	    localStorage.removeItem("OrderName");
+	    localStorage.removeItem("Number");
+	    localStorage.removeItem("Requestinfo");
+		top.location="mobile_rest_dishDetail.html";
+	}
+    
+    
+    function submitsearch()
+    {
+    	var key = document.getElementById('search').value;
+    	localStorage.setItem("key",key);
+    	localStorage.setItem("searchtype","searchtype_2");		
+    	localStorage.setItem("area","全部");
+		localStorage.setItem("kind","全部");
+						
+		top.location="mobile_search_list.html";
+    }
+</script>
+
+
+<body>
+
+	<div id="login" data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e">
+			<div style="float:left;width:70%;margin-top:6px"><input  type="search"  placeholder="输入菜名" id="search"  value="" /></div>
+			<div style="float:left;width:30%"  onclick="submitsearch();"><a href="#" data-role="button">搜索</a></div>				
+		</div>
+				
+		<div data-role="content" id="content" data-theme="c">
+			<ul id="recommentlist" data-role="listview" >
+
+			</ul>
+	
+		</div>
+	</div>
+	
+</body>
+    

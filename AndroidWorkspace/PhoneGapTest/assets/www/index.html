@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=320; user-scalable=no" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>PhoneGap</title>
+	  <link rel="stylesheet" href="master.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	  <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
+	  <script type="text/javascript" charset="utf-8" src="main.js"></script>
+	  <script type="text/javascript" src="selectuser.js"></script>
+
+  </head>
+  <body onload="init();" id="stage" class="theme">
+ 		<h1>hello world</h1>
+ 		  <a href="result/result.html"><span><font color="red">点击我</font></span></a> <br>
+ 		<h2>凤鸣曲</h2>
+ 		<audio controls="controls" autoplay="autoplay" loop="loop">
+			<source src="http://10.0.2.2/media/song.mp3" type="audio/mpeg"/>
+		</audio>
+		<form>
+			姓名<input type="text" >
+			<img alt="gif" src="http://10.0.2.2/img.gif">
+		</form>
+		
+		<form >
+			<h2>select a user</h2>
+			<select name="users" onchange="showUser(this.value)">
+				<option value="2">Jamie</option>
+				<option value="3">Iris</option>
+				<option value="5">Dillan</option>
+			</select>
+		</form>
+		
+		<p>
+		<div id="textHint"><b>User info will be listed here.</b>	
+		</div>
+		</p>
+		
+  </body>
+</html>

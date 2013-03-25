@@ -1,0 +1,106 @@
+<head>
+    <meta charset="UTF-8" >
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+</head>
+
+<script type="text/javascript">
+	document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {       
+        document.addEventListener("backbutton", backevent, false); 
+    }
+    function  backevent(){
+         navigator.app.backHistory();
+    }
+     $(document).bind("mobileinit", function () {
+        $.mobile.loadingMessageTextVisible = true;
+    });
+	    
+	function  registersubmit()
+	{	
+		$.mobile.loadingMessageTextVisible = true;
+		$.mobile.showPageLoadingMsg("b", "请稍等");
+		var name=document.getElementById('name').value;
+		var password=document.getElementById('pwd').value;
+		var password2=document.getElementById('pwd2').value;
+		if(name==""){
+			$.mobile.hidePageLoadingMsg();
+			navigator.notification.alert('请输入手机号', '', '在线点餐',  '确认');
+			return;
+		}
+		if(!new RegExp(/^[1][3,5,8][0-9]{9}$/).test(name))
+		{
+			$.mobile.hidePageLoadingMsg();
+			navigator.notification.alert('手机号码不正确', '', '在线点餐',  '确认');
+			return;
+		}
+		if(password==""){
+			$.mobile.hidePageLoadingMsg();
+			navigator.notification.alert('请设置密码', '', '在线点餐',  '确认');
+			return;
+		}
+		if(password2==""){
+			$.mobile.hidePageLoadingMsg();
+			navigator.notification.alert('请确认密码', '', '在线点餐',  '确认');
+			return;
+		}
+		if(password!=password2)
+		{
+			$.mobile.hidePageLoadingMsg();
+			navigator.notification.alert('两次密码不同，请重新输入', '', '在线点餐',  '确认');
+			return;
+		}
+		
+		$.get("http://www.0713.me/mobile/register.php", {username:name, password:password},
+		  function(data){
+		 	 $.mobile.hidePageLoadingMsg();
+		     if(data.state==3){
+		    	localStorage.setItem("LoginState",1);
+		    	localStorage.setItem("LoginUid",data.uid);
+		    	localStorage.setItem("LoginUsername",name);
+		    	navigator.notification.alert(name+',您注册注册成功！', null, '在线点餐',  '继续...');
+		    	navigator.app.backHistory();
+		    }else if(data.state==2){
+		    	navigator.notification.alert('该账户已被注册', '', '在线点餐',  '确认');
+		    }else{
+		    	navigator.notification.alert('注册失败', '', '在线点餐',  '确认');
+		    }
+		  },"json");
+	}
+</script>
+
+
+<body>
+
+	<div id="register" data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e">
+			<a href="#" onclick="top.location='main.html'" data-icon="back">返回</a>
+			<h1>用户注册</h1>
+		</div>
+				
+		<div data-role="content">
+
+			<ul class="ui-listview ui-listview-inset ui-corner-all ui-shadow" data-inset="true" data-role="listview" >
+				<li data-theme="c">
+					<input id="name" name="name" type="text" placeholder="输入手机号" >
+				</li>
+				<li data-theme="c" >
+					<input id="pwd" name="pwd" type="password" placeholder="密码" >
+				</li>
+				<li data-theme="c" >
+					<input id="pwd2" name="pwd2" type="password" placeholder="确认密码" >
+				</li>
+				<li data-theme="c" >
+					<button  onclick="registersubmit();" data-theme="e">注册</button>
+				</li>
+			</ul>
+
+		</div>
+		
+	</div>
+	
+</body>
+

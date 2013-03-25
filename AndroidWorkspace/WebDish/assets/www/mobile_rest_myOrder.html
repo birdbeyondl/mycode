@@ -1,0 +1,92 @@
+<head>
+        <meta charset="UTF-8" >
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+		<script type="text/javascript" src="js/script_mobile_menu.js"></script>
+</head>
+<script type="text/javascript">
+		
+		document.addEventListener("deviceready", onDeviceReady, false);
+	    function onDeviceReady() {       
+	        document.addEventListener("backbutton", backevent, false); 
+	    }
+	    function  backevent(){
+	         navigator.app.backHistory();
+	    }
+	    $(document).bind("mobileinit", function () {
+	        $.mobile.loadingMessageTextVisible = true;
+	    });
+		$(document).ready(function(){
+			var state=localStorage.getItem("LoginState");
+			if(state!=1) top.location='login.html'; //state为1表示已登录，为0表示未登录
+			else Init();
+		});
+	
+		  
+		function Init(){
+			$.mobile.loadingMessageTextVisible = true;
+			$.mobile.showPageLoadingMsg("b", "进入餐厅首页");
+			var uid=localStorage.getItem("LoginUid");
+			
+			$.ajax({
+				type : "GET",
+				url:"http://www.0713.me/mobile/rest.php?do=myOrder",
+				data : "uid="+uid,
+				cache : false,
+				dataType : "json",
+				success : function(data) {
+					show_data(data);	
+					$.mobile.hidePageLoadingMsg();		
+				}
+			});
+		}
+				
+		function show_data(data){
+			
+	        if(data.orderli.length>0){
+                var tmphtml='';
+		        for(var i=0;i<data.orderli.length;i++){ 
+		        	tmphtml+='<li class="myOrder ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-btn-up-d" data-corners="false" data-shadow="false" data-iconshadow="true" data-inline="false" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="d"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a href="#" onclick="GotoOrderDetail(this.id)" id="'+data.orderli[i].Order_OrderID+'" class="ui-link-inherit"><div style="width:70%;float:left"><h3 class="ui-li-heading">'+data.orderli[i].Merchant_Name+'</h3><p class="ui-li-desc">餐厅地址：'+data.orderli[i].Merchant_Address+'</p><p class="ui-li-desc">就餐时间：'+data.orderli[i].OrderSeat_ReservedDate+' '+data.orderli[i].OrderSeat_ReservedTime+'</p></div>';
+                    if(data.orderli[i].Order_Status==0)
+                    	tmphtml+='<div><br><font size="3" color="red">未付款</font></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>';
+			        else
+			        	tmphtml+='<div><br><font size="3" color="red">已付款</font></div></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>';
+		        }   
+		      //清空界面
+				$("#content").empty();
+				
+				//显示界面
+				$("#content").append(tmphtml);
+			}
+			else{
+				//清空界面
+				$("#content").empty();
+			 	$("#content").append("<div style='margin:10px 0;'><p>您目前没有订单！</p></div> ");
+			}
+				
+		}
+		function GotoOrderDetail(id)
+		{
+			localStorage.setItem("orderID",id);	
+			top.location='mobile_rest_orderDetail.html';
+		}
+	</script>
+<body>
+	<div data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e">
+		<a href="#" data-icon="home" onclick="top.location='main.html'">首页</a>
+		    <h1 id="head">我的订单</h1>
+		</div>
+				
+		<div data-role="content" data-theme="d">
+		<ul class="ui-listview"  data-split-icon="gear" data-role="listview" id="content">
+	    </ul>
+        </div>
+		<div id="pagediv" data-role="footer"  data-position="fixed" data-theme="e">
+			
+		</div>
+	</div>
+</body>

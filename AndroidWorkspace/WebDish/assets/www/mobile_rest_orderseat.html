@@ -1,0 +1,181 @@
+<head>
+    <meta charset="UTF-8" >
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+	
+	<script type="text/javascript" src="js/mobiscroll-1.6.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/mobiscroll-1.6.css"/>
+	<script type="text/javascript" src="js/order.js"></script>
+</head>
+	
+<script type="text/javascript">
+	//返回键设置
+	document.addEventListener("deviceready", onDeviceReady, false);
+	
+    function onDeviceReady() {  
+    	
+        document.addEventListener("backbutton", backevent, false); //返回键
+    }
+    function  backevent(){   
+         navigator.app.backHistory();
+    }
+   
+	$(document).ready(function(){
+		$('#date').scroller('destroy').scroller({preset:"date",theme:"android",mode:"clickpick"});
+		$('#time').scroller('destroy').scroller({preset:"time",theme:"android",mode:"scroller"});
+		
+		Init();
+	});
+
+	function Init(){		
+		$("#head").text(localStorage.getItem("restname"));
+		var OrderPhone=localStorage.getItem("OrderPhone");
+		var Date=localStorage.getItem("Date");
+		var Time=localStorage.getItem("Time");
+		var OrderName=localStorage.getItem("OrderName");
+		var Number=localStorage.getItem("Number");
+		var Requestinfo=localStorage.getItem("Requestinfo");
+		
+		if(OrderPhone!=null) $("#ordertel").val(OrderPhone);
+		if(Date!=null) $("#date").val(Date);
+		if(Time!=null) $("#time").val(Time);
+		if(OrderName!=null) $("#name").val(OrderName);
+		if(Number!=null){ $("#number").val(Number);$("#number").val(Number).slider("refresh");  }
+		if(Requestinfo!=null) $("#requestinfo").val(Requestinfo);
+		
+		var state=localStorage.getItem("LoginState");
+		if(state==null)
+		{
+			if(confirm("您将进入订座页面，是否要登录？")){
+			    top.location='login.html';
+			}
+			else{
+				var html='<a class="ui-btn ui-btn-up-e ui-btn-corner-all ui-shadow ui-btn-up-undefined" data-role="button" onclick="TelCheck()" data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">验证</span></span></a>';
+				$("#telcheck").empty(); 
+				$("#telcheck").append(html);
+			}
+		}
+	}
+function onCallReceived(msg)
+{
+	$.mobile.hidePageLoadingMsg();
+	var sign=localStorage.getItem("sign");
+	var phone=localStorage.getItem("OrderPhone");
+	if(sign!=1){
+	   localStorage.setItem("sign",1);
+	   var phone=localStorage.getItem("OrderPhone");
+       var checknum="071311"; //服务器发给手机的固定验证码
+       if(checknum==msg){ 
+          alert("验证成功");
+        //构建json字符串
+  		var jsonStr = "{'phone':'" + phone + "','checksign':'1'}"; 
+  		var jsonObj = eval('(' + jsonStr + ')'); //把json字符串转换成对象  
+  		localStorage.setItem("CheckPhone",JSON.stringify(jsonObj));             
+       }
+       else {
+           alert("验证失败，请重新验证");          
+       }
+	}
+
+}
+function checkfail()
+{
+	$.mobile.hidePageLoadingMsg();
+	var sign=localStorage.getItem("sign");
+	if(sign!=1){
+	  alert("验证失败，请重新验证");
+	  localStorage.setItem("sign",1);   
+	}
+}
+
+function TelCheck()
+{	
+	localStorage.setItem("sign",0);
+	var jsonStr = "{'phone':'" + null + "','checksign':'0'}"; 
+	var jsonObj = eval('(' + jsonStr + ')'); //把json字符串转换成对象  
+	localStorage.setItem("CheckPhone",JSON.stringify(jsonObj));
+	          
+	var phone=localStorage.getItem("OrderPhone");
+	if(phone==null) alert("请输入手机号码");
+	$.mobile.loadingMessageTextVisible = true;
+	$.mobile.showPageLoadingMsg("b", "正在 验证手机号码，请稍等");
+	$.ajax({
+		 type:"POST",
+		 url:"http://www.0713.me/mobile/mobile_rest.php?do=reserveCheck",
+		 dataType : "json",
+		 async:false,
+		 data:"&phone="+phone,	 
+		 success:function(data){ 
+		 }
+	 });
+	setTimeout("checkfail()",10000);//间隔10秒后调用验证短信函数
+}
+
+
+</script>
+
+
+<body>
+	
+	<div id="main" data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e">
+		    <h1 id="head"></h1>
+			<div id="guide" data-role="navbar" data-theme="e">
+				<ul>
+					<li><a href="#" data-icon="home" onclick="top.location='mobile_rest_main.html'">餐厅首页</a></li>
+					<li><a href="#" data-icon="plus" onclick="top.location='mobile_rest_dishList.html'">点菜</a></li>
+					<li><a href="#" data-icon="grid" onclick="top.location='mobile_rest_mymenu.html'">菜单</a></li>
+				</ul>
+			</div>
+			
+		</div>
+				
+		<div data-role="content" id="content">
+		<div class="ui-grid-a">
+			<div class="ui-block-a" style="width:60%;margin-top=6px"><input id="ordertel" type="text"  placeholder="预定手机号"  name="ordertel" onblur="localStorage.setItem('OrderPhone',$(this).val())"/></div>
+			<div id="telcheck" class="ui-block-b" style="width:40%"></div>
+		</div>
+			<div class="ui-grid-a">
+				<div class="ui-block-a"><input type="text" id="date" placeholder="日期选择" name="date"  value="" onblur="localStorage.setItem('Date',$(this).val())"/></div>
+				<div class="ui-block-b"><input type="text" id="time" placeholder="时间选择" name="time"  value="" onblur="localStorage.setItem('Time',$(this).val())"/></div>
+			</div>
+			<div data-role="fieldcontain">
+				<label for="number">人数</label>
+				<input type="range" min="1" max="20" step="1" id="number" name="number" value="" onchange="localStorage.setItem('Number',$(this).val())"/>
+			</div>
+			<div class="ui-grid-a">
+				<div class="ui-block-a"><input type="text" id="name" placeholder="订餐人姓名" name="name" value="" onblur="localStorage.setItem('OrderName',$(this).val())"/></div>
+				<div class="ui-block-b">
+					<select id="sex" name="sex" data-role="slider" >
+						<option value="先生">先生</option>	
+						<option value="女士">女士</option>										
+					</select>
+				</div>
+			</div>
+			
+			<a data-role="button" href="#seatlist"  onclick="DateTimecheck();" id="seatbutton">选择座位</a>
+			
+			<textarea id="requestinfo" placeholder="备注：如果您有特殊需求请告知" name="require" value="" onblur="localStorage.setItem('Requestinfo',$(this).val())"></textarea>
+		</div>
+		
+		
+			<div  data-role="button" onclick="submitcheck();">提交订座</div>
+		
+	</div>
+	
+	<div id="seatlist" data-role="page"  data-theme="e">	
+		<div data-role="header" data-theme="e">
+		    <h1>座位</h1>	
+		</div>		
+		<div data-role="content" id="seatcontent" data-theme="e">
+			<ul data-role="listview" id="lists">
+				 <li><a href="#main" >请先填写预定信息</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	
+</body>

@@ -1,0 +1,108 @@
+<head>
+        <meta charset="UTF-8" >
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+		<script type="text/javascript" src="js/cordova-1.5.0.js"></script>		
+		<script type="text/javascript" src="js/script_mobile_menu.js"></script>
+</head>
+	
+<script type="text/javascript">
+	//返回键设置
+	document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {       
+        document.addEventListener("backbutton", backevent, false); //返回键
+    }
+    function  backevent(){
+         navigator.app.backHistory();
+    }
+
+	$(document).ready(function(){
+		Init();
+	});
+	
+	function Init(){
+		
+		var dishid=localStorage.getItem("dishid");
+		
+		$("#head").text(localStorage.getItem("restname"));
+		
+		$.ajax({
+			type : "get",
+			url : "http://www.0713.me/mobile/rest.php?do=dishDetail",
+			data : "id="+dishid,
+			cache : false,
+			dataType : "json",
+			success : function(data) {
+				show_data(data);	
+			}
+		});
+		
+	}	
+		function show_data(data){
+			var dishid=localStorage.getItem("dishid");
+			var restid=localStorage.getItem("restid");
+
+			tmphtml='<img src="'+data.imgurl+'" alt="菜品图片"> <div >  <h1>'+data.dishname+'</h1>';
+			if(data.dishcuisine!=null && data.dishcuisine!=""){
+				tmphtml+='菜系：'+data.dishcuisine+'<br>';
+			}
+			if(data.dishisspecial=="1"){
+				tmphtml+='价格：￥'+data.dishspecialprice+'/'+data.dishquantify+'<br>';
+			}
+			else{
+				tmphtml+='价格：￥'+data.dishprice+'/'+data.dishquantify+'<br>';
+			}
+			if(data.dishdescription!=null  && data.dishdescription!=""){
+				tmphtml+='描述：'+data.dishdescription+'<br>';
+			}
+			else{
+				tmphtml+='描述：暂无<br></div>';
+			}			
+			
+			if(data.dishstatus=="1"){//在售		
+				if(data.dishisspecial=="1"){
+					tmphtml+='<a data-role="button" data-icon="plus" onclick="AddToShoppingCarFromSingle('+dishid+',1,'+data.dishspecialprice+',\''+data.dishname+'\','+restid+');" data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span" class="ui-btn ui-btn-up-c ui-btn-icon-left ui-btn-corner-all ui-shadow ui-btn-up-undefined"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">加入菜单</span><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></span></a><a href="#" data-role="button" data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span" class="ui-btn ui-btn-up-c ui-btn-corner-all ui-shadow ui-btn-up-undefined"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">参与评论</span></span></a>';
+				}else{
+					tmphtml+='<a data-role="button" data-icon="plus" onclick="AddToShoppingCarFromSingle('+dishid+',1,'+data.dishprice+',\''+data.dishname+'\','+restid+');" data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span" class="ui-btn ui-btn-up-c ui-btn-icon-left ui-btn-corner-all ui-shadow ui-btn-up-undefined"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">加入菜单</span><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></span></a><a href="#" data-role="button" data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span" class="ui-btn ui-btn-up-c ui-btn-corner-all ui-shadow ui-btn-up-undefined"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">参与评论</span></span></a>';				
+				}
+			}else{//暂停销售
+				tmphtml+='<a data-role="button" data-icon="plus"  data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span" class="ui-btn ui-btn-up-c ui-btn-icon-left ui-btn-corner-all ui-shadow ui-btn-up-undefined"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">暂停销售</span><span class="ui-icon ui-icon-plus ui-icon-shadow"></span></span></a><a href="#" data-role="button" data-corners="true" data-shadow="true" data-iconshadow="true" data-inline="false" data-wrapperels="span" class="ui-btn ui-btn-up-c ui-btn-corner-all ui-shadow ui-btn-up-undefined"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">参与评论</span></span></a>';				
+			}
+			
+			$("#main").append(tmphtml);
+		}
+		function AddToShoppingCarFromSingle(dishid,num,price,name,restid)
+		{
+			AddToShoppingCar(dishid,num,price,name,restid);
+			top.location='mobile_rest_mymenu.html';
+		}
+</script>
+<style>
+ img{ text-align:center}
+</style>	
+	
+<body>
+	
+	<div data-role="page" data-role="e">
+	<div data-role="header" data-theme="e" >
+		<h1 id="head"></h1>
+		<div id="guide" data-role="navbar" data-theme="e">
+			<ul>
+				<li><a href="#" data-icon="home"  onclick="top.location='mobile_rest_main.html'">餐厅首页</a></li>
+				<li><a href="#" data-icon="grid"  onclick="top.location='mobile_rest_orderseat.html'">订座</a></li>
+				<li><a href="#" data-icon="plus"  onclick="top.location='mobile_rest_dishList.html'">点菜</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div data-role="content" id="main"  >
+					
+	</div>
+	</div>
+
+	
+</body>
+	

@@ -1,0 +1,101 @@
+<head>
+    <meta charset="UTF-8" >
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+	
+	<script type="text/javascript" src="js/mobiscroll-1.6.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/mobiscroll-1.6.css"/>
+	<script type="text/javascript" src="js/order.js"></script>
+</head>
+	
+<script type="text/javascript">
+	//返回键设置
+	document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {       
+        document.addEventListener("backbutton", backevent, false); //返回键
+    }
+    function  backevent(){
+         navigator.app.backHistory();
+    }
+   
+	$(document).ready(function(){
+		$('#date').scroller('destroy').scroller({preset:"date",theme:"android",mode:"clickpick"});
+		$('#time').scroller('destroy').scroller({preset:"time",theme:"android",mode:"scroller"});
+		Init();
+	});
+
+	function Init(){			
+		$("#head").text(localStorage.getItem("restname"));
+		var state=localStorage.getItem("LoginState");
+		
+		if(state!=1)
+		{
+			navigator.notification.alert("请先登录在订座!",null,"在线点餐","知道了");
+			top.location='login.html'; //state为1表示已登录，为0表示未登录
+		} 
+	}
+
+</script>
+
+
+<body>
+	
+	<div id="main" data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e">
+		    <h1 id="head"></h1>
+			<div id="guide" data-role="navbar" data-theme="e">
+				<ul>
+					<li><a href="#" data-icon="home" onclick="top.location='mobile_rest_main.html'">餐厅首页</a></li>
+					<li><a href="#" data-icon="plus" onclick="top.location='mobile_rest_dishList.html'">点菜</a></li>
+					<li><a href="#" data-icon="grid" onclick="top.location='mobile_rest_mymenu.html'">菜单</a></li>
+				</ul>
+			</div>
+			
+		</div>
+				
+		<div data-role="content" id="content">
+			<input id="ordertel" type="text"  placeholder="预定手机号"  name="ordertel">
+			<div class="ui-grid-a">
+				<div class="ui-block-a"><input type="text" id="date" placeholder="日期选择" name="date"  value=""/></div>
+				<div class="ui-block-b"><input type="text" id="time" placeholder="时间选择" name="time"  value=""/></div>
+			</div>
+			<div data-role="fieldcontain">
+				<label for="number">人数</label>
+				<input type="range" min="1" max="20" step="1" id="number" name="number" value=""/>
+			</div>
+			<div class="ui-grid-a">
+				<div class="ui-block-a"><input type="text" id="name" placeholder="订餐人姓名" name="name" value=""/></div>
+				<div class="ui-block-b">
+					<select id="sex" name="sex" data-role="slider" >
+						<option value="先生">先生</option>	
+						<option value="女士">女士</option>										
+					</select>
+				</div>
+			</div>
+			
+			<a data-role="button" href="#seatlist"  onclick="DateTimecheck();" id="seatbutton">选择座位</a>
+			
+			<textarea id="reuqestinfo" placeholder="备注：如果您有特殊需求请告知" name="require" value="" ></textarea>
+		</div>
+		
+		
+			<div  data-role="button" onclick="submitcheck();">提交订座</div>
+		
+	</div>
+	
+	<div id="seatlist" data-role="page"  data-theme="e">	
+		<div data-role="header" data-theme="e">
+		    <h1>座位</h1>	
+		</div>		
+		<div data-role="content" id="seatcontent" data-theme="e">
+			<ul data-role="listview" id="lists">
+				 <li><a href="#main" >请先填写预定信息</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	
+</body>

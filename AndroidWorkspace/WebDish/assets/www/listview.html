@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+	<head>
+		<meta http-equiv="Content-Type" content="textml;charset=utf-8" />
+		
+		<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+		
+		<script type="text/javascript">
+			var data='<li><a href="index.html">Acura</a><><li><a href="index.html">Audi</a><>';
+			function show()
+			{
+				//alert('show');
+				//alert(data);
+				$("#lists").append(data);
+				$("#lists").listview('refresh');
+			}
+		</script>
+	</head>
+	<body>
+		<div data-role="page">
+			<div data-role="header">
+				<h3>动态添加列表</h3>
+			</div>
+			<div data-role="content">
+				<div>
+					<input type="button" id="showList" onclick="show()" value="显示列表" />
+				</div>
+				<div>
+					<ul id="lists" data-role="listview">
+					</ul>
+				</div>
+			</div>
+			<div data-role="footer">
+			<h3>添加列表底部</h3>
+			</div>
+		</div>
+	</body>
+<html>

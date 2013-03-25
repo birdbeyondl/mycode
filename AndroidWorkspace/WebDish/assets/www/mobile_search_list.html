@@ -1,0 +1,145 @@
+<head>
+        <meta charset="UTF-8" >
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+		<script type="text/javascript" src="js/script_mobile_menu.js"></script>
+	</head>
+
+	<script type="text/javascript">
+		//返回键设置
+		document.addEventListener("deviceready", onDeviceReady, false);
+	    function onDeviceReady() {       
+	        document.addEventListener("backbutton", backevent, false); //返回键
+	    }
+	    function  backevent(){
+	         navigator.app.backHistory();
+	    }
+	    $(document).bind("mobileinit", function () {
+	        $.mobile.loadingMessageTextVisible = true;
+	    });
+		$(document).ready(function(){
+			//localStorage.setItem("page",1);
+			Init();
+		});
+		
+		function Init(){
+			$.mobile.loadingMessageTextVisible = true;
+			$.mobile.showPageLoadingMsg("b", "获取搜索结果列表");
+			var key=localStorage.getItem("key");
+	    	var searchtype=localStorage.getItem("searchtype");
+			var area=localStorage.getItem("area");
+			var kind=localStorage.getItem("kind");
+			var page=localStorage.getItem("searchpage");
+			
+			$.ajax({
+				type : "get",
+				url : "http://www.0713.me/mobile/mobile_search.php?ac=list2",
+				data : "searchtype="+searchtype+"&key="+key+"&area="+area+"&kind="+kind+"&page="+page,
+				cache : false,
+				dataType : "json",
+				success : function(data) {
+				show_data(data);	
+				$.mobile.hidePageLoadingMsg();		
+				}
+			});
+		}
+		
+		function show_data(data){
+			
+			if(data.num>0){//搜索数大于1
+			 	$("#head").text("搜索"+data.type+"【"+data.num+"】");	
+			 	
+			 	var tmphtml='';		
+				for (var i=0; i<data.info.length; i++) {					
+					if(data.type=="餐厅"){
+						tmphtml+='<li id="'+data.info[i].Merchant_ID+'" onclick="GotoRest('+data.info[i].Merchant_ID+')" data-corners="false" data-shadow="false" data-iconshadow="true" data-inline="false" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="c" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-c"><div class="ui-btn-inner ui-li"><div class="ui-btn-text"><a href="#"  class="ui-link-inherit"><img src="'+data.info[i].imageurl+'" width="110px" height="80px" class="ui-li-thumb"><h3 class="ui-li-heading">'+data.info[i].Merchant_Name+'</h3><p class="ui-li-desc">'+data.info[i].Cuisine_Name+'</p><p class="ui-li-desc">'+data.info[i].Merchant_Address+'</p></a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>';
+					}else{
+						tmphtml+='<li id="'+data.info[i].Merchant_ID+'" onclick="GotoRestDishDetail('+data.info[i].Merchant_ID+',\''+data.info[i].Merchant_Name+'\','+data.info[i].Dish_ID+')" data-iconshadow="true" data-inline="false" data-wrapperels="div" data-icon="false" data-iconpos="right" data-theme="c" class="ui-btn ui-btn-icon-right ui-li ui-li-has-alt ui-li-has-thumb ui-btn-up-c"><div class="ui-btn-inner ui-li ui-li-has-alt"><div class="ui-btn-text"><a  href="#"  class="ui-link-inherit"><img src="'+data.info[i].imageurl+'" width="110px" height="80px" class="ui-li-thumb"><h3 class="ui-li-heading">'+data.info[i].Dish_Name+'</h3><p class="ui-li-desc">'+data.info[i].Merchant_Name+'</p>￥'+data.info[i].Dish_Price+'/'+data.info[i].Dish_Quantify+'</a></div><span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>';								
+					}
+
+				}
+				//清空界面
+				$("#content").empty();
+				$("#pagediv").empty();
+				//显示界面
+				$("#content").append('<ul class="ui-listview" data-split-theme="d" data-split-icon="gear" data-role="listview"></ul>');	
+				$("#content ul").append(tmphtml);
+				$("#pagediv").append(data.pagehtml);
+			 }
+			 else{	//没有搜索到
+			 	$("#head").text("搜索结果");
+			 	$("#content").append("<div style='margin:10px 0;'><p>暂无符合条件的搜索结果</p></div> ");
+			 }
+			
+		}
+		
+		function nextpage(page){
+			if(page==0){
+				return;
+			}else{
+				localStorage.setItem("searchpage",page);
+				Init();
+			}
+		}
+		
+		function GotoRest(restid)
+		{  
+			if(restid!=localStorage.getItem("restid"))
+			{  
+				//对存储在点菜列表的信息进行初始化
+			    localStorage.setItem("page",1);
+			    localStorage.setItem("filterfoodtype",0);
+			    localStorage.setItem("classname","所有");
+			    window.localStorage.setItem("typename","所有");
+			   //对存储在订座页面的信息进行初始化
+			    localStorage.removeItem("OrderPhone");
+			    localStorage.removeItem("Date");
+			    localStorage.removeItem("Time");
+			    localStorage.removeItem("OrderName");
+			    localStorage.removeItem("Number");
+			    localStorage.removeItem("Requestinfo");
+			    //存储餐厅id
+				localStorage.setItem("restid",restid);
+				
+				
+			}
+			top.location="mobile_rest_main.html";
+		}		
+		
+		function GotoRestDishDetail(restid,restname,dishid)
+		{
+			//对存储在订座页面的信息进行初始化
+		    localStorage.removeItem("OrderPhone");
+			localStorage.removeItem("Date");
+			localStorage.removeItem("Time");
+			localStorage.removeItem("OrderName");
+			localStorage.removeItem("Number");
+			localStorage.removeItem("Requestinfo");
+		    //存储餐厅及菜品信息	
+			localStorage.setItem("restid",restid);
+			localStorage.setItem("restname",restname);
+			localStorage.setItem("dishid",dishid);
+			top.location="mobile_rest_dishDetail.html";
+		}
+	</script>
+	
+	
+	<body>
+	<div data-role="page"  data-theme="e">
+		<div data-role="header" data-theme="e" data-position="fixed">
+			<h1 id="head"></h1>
+		</div>
+				
+		<div data-role="content" id="content" data-theme="e">
+		</div>
+		
+		<div id="pagediv" data-role="footer"  data-position="fixed" data-theme="e">
+			
+		</div>
+	</div>
+	
+	</body>
+	

@@ -1,0 +1,190 @@
+<head>
+        <meta charset="UTF-8" >
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.1.0-rc.1.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.1.0-rc.1.min.css"/>
+		<script type="text/javascript" src="js/cordova-1.5.0.js"></script>
+		
+		<link href="slider/styles.css" type="text/css" rel="stylesheet" />
+		<link href="slider/photoswipe.css" type="text/css" rel="stylesheet" />
+	
+		<script type="text/javascript" src="js/swipe/klass.min.js"></script>
+		<script type="text/javascript" src="js/swipe/code.photoswipe.jquery-3.0.4.min.js"></script>
+		<stylesheet type="text/css">
+			.pClass
+			{
+				margin:2px;
+			}
+		</stylesheet>
+	</head>
+	
+	<script type="text/javascript">
+		//返回键设置
+		document.addEventListener("deviceready", onDeviceReady, false);
+	    function onDeviceReady() {       
+	        document.addEventListener("backbutton", backevent, false); //返回键
+	    }
+	    function  backevent(){
+	         navigator.app.backHistory();
+	    }
+     $(document).bind("mobileinit", function () {
+        $.mobile.loadingMessageTextVisible = true;
+    });
+		$(document).ready(function(){
+			$.mobile.loadingMessageTextVisible = true;
+			$.mobile.showPageLoadingMsg("b", "进入餐厅首页");
+			Init();
+		});
+		
+		function Init(){
+			
+			var restid=localStorage.getItem("restid");
+			
+			$.ajax({
+				type : "get",
+				url : "http://www.0713.me/mobile/rest.php?do=main",
+				data : "restaurantid="+restid,
+				cache : false,
+				dataType : "json",
+				success : function(data) {
+					show_data(data);
+					 $.mobile.hidePageLoadingMsg();	
+				}
+			});
+		
+		}
+		
+		function show_data(data){
+			//头部展示
+			$("#head").text(data.info.Merchant_Name);
+			localStorage.setItem("restname",data.info.Merchant_Name);
+			
+			if(data.lng!=null && data.lat!=null){
+				localStorage.setItem("lng",data.lng);
+				localStorage.setItem("lat",data.lat);
+			} else{
+				//localStorage.setItem("lng",114.38);
+				//localStorage.setItem("lat",30.63);
+				navigator.geolocation.getCurrentPosition(onSuccess, onError);
+			}
+			
+			function onSuccess(position){
+				localStorage.setItem("lng",position.coords.longitude);
+				localStorage.setItem("lat",position.coords.latitude);
+			}
+			
+			function onError(error) {
+	        	navigator.notification.alert("由于网络原因不能打开地图",null,"在线点餐","知道了...");
+	    	}
+			
+			//餐馆简介
+			var infohtml='<div id="info" data-theme="e"><p class="pClass"><strong>地　　址:</strong>'+data.info.Merchant_Address+'</p><p class="pClass"><strong>交通路线:</strong><a data-role="button" onclick="top.location=\'traffic.html\'">'+data.info.Merchant_Translation+'&#x3000;<img src="images/map_20_gray.png"></a></p>';
+			
+			var tels=data.info.Merchant_Contact_Mobile.replace(/(^\s*)|(\s*$)/g,"").split(/[ ]|,/);
+			infohtml +='</p><p class="pClass"><strong>服务电话:</strong>';
+			for(var i=0; i<tels.length; i++){
+				if(tels[i].length>11){
+					var areacode= tels[i].split("-")[0].replace(/(^\s*)|(\s*$)/g,"");
+					var number= tels[i].split("-")[1].replace(/(^\s*)|(\s*$)/g,"");
+					
+					infohtml +='<a href="tel:'+areacode+number+'">'+areacode+number+'</a>';
+					
+				}
+				else{
+					infohtml +='<a href="tel:'+tels[i].replace(/(^\s*)|(\s*$)/g,"")+'">'+tels[i]+'</a>';
+				}
+				if(i<tels.length-1 && tels[i].replace(/(^\s*)|(\s*$)/g,"")!="") infohtml+=',';
+			}
+			
+			infohtml +='</p><p class="pClass"><strong>主&nbsp;&nbsp;打&nbsp;&nbsp;菜:</strong>'+data.info.Cuisine_Name+'</p><p class="pClass"><strong>营业时间:</strong>'+data.info.Merchant_Opentime;
+			if(data.info.Merchant_Avgpay!=null && data.info.Merchant_Avgpay!="")	
+			{
+				infohtml +=	'</p><p class="pClass"><strong>参考消费:</strong>￥'+data.info.Merchant_Avgpay+'（每人）</div>';
+			}
+			
+			
+			//$("#head").append(headhtml);
+			$("#main").append(infohtml);
+			//图片展示
+			showPic(window, window.Code.Util, window.Code.PhotoSwipe,data);
+		}
+		
+		function showPic(window, Util, PhotoSwipe,data) {
+			//这里没执行
+			var instance, indicators;
+			instance = PhotoSwipe.attach(
+				[	
+					{ url: data.img1},
+					{ url: data.img2 },
+					{ url: data.img3 },
+					{ url: data.img4 }
+				],
+				{
+					target: window.document.querySelectorAll('#PhotoSwipeTarget')[0],
+					preventHide: true,
+					autoStartSlideshow:true,
+					margin:0,
+					getImageSource: function (obj) {
+						return obj.url;
+					},
+					getImageCaption: function (obj) {
+						return obj.caption;
+					}
+				}
+			);
+			indicators = window.document.querySelectorAll('#Indicators span');
+			instance.addEventHandler(PhotoSwipe.EventTypes.onDisplayImage, function (e) {
+				var i, len;
+				for (i = 0, len = indicators.length; i < len; i++) {
+					indicators[i].setAttribute('class', '');
+				}
+				indicators[e.index].setAttribute('class', 'current');
+			});
+			instance.show(0);
+	} 
+	</script>
+	
+	
+	<body>
+	
+	<div data-role="page" data-role="e">
+	<div data-role="header" data-theme="e" >
+		<h1 id="head"></h1>
+			
+		<div id="guide" data-role="navbar" data-theme="e">
+			<ul>
+				<li><a href="#" data-icon="search"  onclick="top.location='index.html'">搜索</a></li>
+				<li><a href="#" data-icon="gear"  onclick="top.location='mobile_rest_orderseat.html'">订座</a></li>
+				<li><a href="#" data-icon="plus"  onclick="top.location='mobile_rest_dishList.html'">点菜</a></li>
+			</ul>
+		</div>
+	</div>
+	<div data-role="content" id="main" >
+
+		<div id="MainContent">
+			<div id="PhotoSwipeTarget" ></div>
+			<div id="Indicators" >
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+		</div>
+					
+	</div>
+	<div data-role="footer" data-theme="e" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#"><img src="images/zoomin.gif" width="20px" height="20px" style="margin:0 auto 4px;border:0;vertical-align:middle">关注</a></li>
+				<li><a href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://v.t.sina.com.cn/share/share.php?',u=d.location.href,p=['url=',e(u),'&title=',e(d.title),'&appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));">
+				<img src="images/s_red.gif" style="margin:0 auto 4px;border:0;vertical-align:middle">转发到微博</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+	
+	</body>
+	

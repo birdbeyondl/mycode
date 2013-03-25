@@ -1,0 +1,19 @@
+html {
+	font-size: 16px;
+	font-weight: normal;
+}
+body {
+	font-size: 16px;
+}
+
+
+h1 {
+	max-height: 10px;
+	background: green;
+}
+
+p {
+	max-height: 10px;
+	background: red;
+	font-size: 1cm;
+}
