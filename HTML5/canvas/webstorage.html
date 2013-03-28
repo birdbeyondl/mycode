@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>简易数据库</title>
+<script type="text/javascript" charset="utf-8" src="webstorage.js"></script>
+
+</head>
+<body>
+	<h3>使用Web Storage来做简易数据库示例</h3>
+	<table>
+		<tr> 
+			<td>姓名</td> <td><input type="text" id='name'/></td> 
+		</tr>
+		<tr>
+			<td>EMail</td> <td> <input type="email" id="email"/></td>
+		</tr>
+		<tr>
+			<td>电话号码</td> <td><input type="text" id="tel"/></td>
+		</tr>
+		<tr>
+			<td><input type="button" value="保存" onclick="saveStorage();"/></td>
+		</tr>
+	</table>
+	<br>
+	<p>检索： <input type="text" id='find'/>
+			<input type="button" value="检索" onclick="findStorage('msg');"/> </p>
+			<p id="msg"></p>
+</body>
+</html>

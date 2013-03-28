@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script language="JavaScript">
+	function showFile()
+	{
+		var file;
+		for(var i=0;i<document.getElementById("file").files.length;i++)
+		{
+			file = document.getElementById("file").files[i];
+			alert(file.name);
+		}
+	}
+</script>
+<title>File</title>
+</head>
+<body>
+    <input  type="file" id="file" multiple="multiple" size="5"/>
+    <input type="button" onclick="showFile();" value="选择文件"/>
+</body>
+</html>

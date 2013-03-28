@@ -1,0 +1,23 @@
+/**
+ * @author birdbeyondl
+ */
+Ext.define('AM.store.Users',{
+	extend:'Ext.data.Store',
+	singleton:true,
+	requires:['AM.model.User'],
+	model:'AM.model.User',
+	constructor:function(){
+		this.callParent(arguments);
+		this.loadData([
+		     {
+		    	 firstname:'luo',
+		    	 lastname:'tingsheng',
+		    	 age:23
+		      },{
+		    	  firstname:'xu',
+		    	  lastname:'fangfang',
+		    	  age:22
+		      }
+		]);
+	}
+});

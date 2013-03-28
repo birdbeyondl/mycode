@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("a").click(function)(){
+		alert("hello jquery");
+	};
+});
+</script>
+<script type="text/javascript">
+	function jq(){
+		alert($("div > p").html());
+		$("<div><p>Hell0</p></div>").appendTo("body");
+		$(document.body).background("black");
+	}
+	function huan(){
+		$("img").each(function(){
+			this.src = "2.jpg";
+		});
+		$("#test2").after("<b>Hello</b>");
+	}
+	
+	function judge(){
+		if($.browser.msie){
+			alert("IE");
+		}
+		else if($.browser.opera){
+			alert("Opera");
+		}else if($.browser.mozilla){
+			alert("Mozilla");
+		}else if($.browser.safari){
+			alert("Safari");
+		}else {
+			alert("Chrome");
+		}
+		$("#btn").hide("slow");
+		$("#btn").show();
+		
+	}
+	
+</script>
+<title>Jquery</title>
+</head>
+<body>
+	<a href="#">jquery</a><br>
+	<div>
+		<p>two</p>
+		
+	</div>
+	<p>three</p>
+	<a href="#" id="test" onClick="jq()">Jquery</a>
+	
+	<img alt="" src="1.jpg">
+	<img alt="" src="1.jpg">
+	<button  id="test2" onclick="huan()">变幻</button><br><br>
+	<div>
+		<p id="b">Hell0</p>
+		<p id="a" >Hello Again</p>
+		<p class="selected">And Again </p>	
+		<button id="btn" onclick="judge()">Click</button>
+	</div>
+</body>
+</html>

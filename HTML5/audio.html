@@ -1,0 +1,41 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta charset="UTF-8">
+<title>First HTML5</title>
+<script type="text/javascript" charset="utf-8" src="canvas.js"></script>
+	<script type="text/javascript">
+		var c=document.getElementById("draw");
+		var cxt = c.getContext("2d");
+		cxt.fillStyle="#FF0000";
+		cxt.fillRect(10,10,150,75);
+	</script>
+	<script type="text/javascript" src="canvas.js" />
+</head>
+<body onload="draw('canvas');">
+
+		<h1>�����</h1>
+		<audio controls="controls" autoplay="autoplay">
+			<source src="song.ogg" type="audio/ogg"/>
+			<source src="song.mp3" type="audio/mpeg"/>
+	</audio>
+	<br>
+	
+	<h1>Vedio</h1>
+	<video  width="320" height="240" controls="controls">
+		<source src="movie.mp4" type="video/mp4" />
+		Your browser does not support the video tag.
+	</video>
+	
+	
+	<h3>vanvas sample</h3>
+	<canvas id="canvas" width="400" height="300" > 
+	</canvas>
+	
+	<br>
+
+  
+  <button type="button" onclick="">
+  </button>
+</body>
+</html>
